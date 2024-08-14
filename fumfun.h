@@ -6,6 +6,7 @@
 #include <RF24.h>
 
 void Rele(int n, bool estado); 
+void STOP();
 
 
 #endif
