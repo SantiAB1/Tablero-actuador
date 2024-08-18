@@ -11,7 +11,7 @@ void setup() {
   radio.begin();
   radio.openReadingPipe(1, direccion);//se setea una pipe y una direccion 
   radio.setPALevel(RF24_PA_MAX);
-  radio.startListening();             //El tablero actuador se pone como emisor en principio
+  radio.startListening();             //El tablero actuador se pone como Receptor en principio
   
   //Declaro los leds a usar, el RGB tiene 3 patas que usan 3 pines distintos, el led del veneno es violeta
   pinMode(LEDVENENO,OUTPUT);          
