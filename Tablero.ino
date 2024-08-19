@@ -2,7 +2,7 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 #include "Tablero.h"
-
+#include "fumfun.h"
 
 
 void setup() {
@@ -18,16 +18,23 @@ void setup() {
   pinMode(LEDR,OUTPUT);
   pinMode(LEDG,OUTPUT);
   pinMode(LEDB,OUTPUT);
+
+   for(char i = 0; i < 4; i++){
+    pinMode(reles[i], OUTPUT);
+    digitalWrite(reles[i], HIGH);
+  }
   
 }
 
 void loop() {
 
   if (radio.available()) //Detecta si hay algo para leer (si el emisor le mando algo)
-  { 
-    radio.read(&mensaje, sizeof(mensaje);
-    interpretarmensaje(mensaje);
-  }
+  {
+    radio.read(&mensaje, sizeof(mensaje));
+    Serial.println(mensaje);
+    interpretarmensaje(mensaje); 
+    
+    }
 }
 
 void interpretarmensaje(char texto)
@@ -36,32 +43,33 @@ void interpretarmensaje(char texto)
   switch (texto)
   {
     case 'S':
-      analog.Write(LEDR,0);
-      analog.Write(LEDG,255);                            //Si se recibe una S se prende el LED EN VERDE y se apaga el rojo por si se habia prendido
+      digitalWrite(LEDR,LOW);                               
+      digitalWrite(LEDG,HIGH);                            //Si se recibe una S se prende el LED EN VERDE y se apaga el rojo por si se habia prendido
       radio.openWritingPipe(direccion);
-      radio.stopListening;                               //se pone en modo emisor
+      radio.stopListening();                               //se pone en modo emisor
       radio.write(&confirmacion, sizeof(confirmacion));  // envia el mensaje "S" para confirmar que se está recibiendo correctamente
       radio.openReadingPipe(1,direccion); 
-      radio.startListening;                              //vuelve al modo receptor
+      radio.startListening();                              //vuelve al modo receptor
+      //delay(10000);
     break;
 
     case 'D':
-      bool flag=0
-      //hacer un archivo aparte con la funcion de los reles 
-    break;
-  
+      flag=1;           //flag: 1 dispara, y 0 SOP
+      disparo(flag);
+    break;  
     case 'P':
-      bool flag=1;
-      // en la misma funcion del rele, si recibe un 1 o un 0 hace dos operaciones distintas
+      flag=0;
+      disparo(flag);
     break;
     
     case 'V':
-      digital.Write(LEDVENENO,HIGH);
+      digitalWrite(LEDVENENO,HIGH);
+       // Cuando la pagina web nos dice que esta vacio
     break;
 
     default:
-      analog.Write(LEDG,0);
-      analog.Write (LEDR,255); //Pongo el rgb en rojo para indicar que no se está recibiendo "S" ni ningún otro mensaje válido
+      digitalWrite(LEDG,LOW);
+      digitalWrite (LEDR,HIGH); //Pongo el rgb en rojo para indicar que no se está recibiendo "S" ni ningún otro mensaje válido
     break;
   }
 
