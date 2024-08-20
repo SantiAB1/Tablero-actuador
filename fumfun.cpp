@@ -46,7 +46,7 @@ void initINT()
 //Función para cambiar la variable que indica si se activo o desactivo el sensor
 void rutinaINT(PCINT0_vect) 
 {
-  delay(500)  //se coloca un delay para asegurar que los rebotes no cambien el estado varias veces, ya que podrian generar que se desconfigure la logica y quede siempre en activo el sensor
+  delay(500);  //se coloca un delay para asegurar que los rebotes no cambien el estado varias veces, ya que podrian generar que se desconfigure la logica y quede siempre en activo el sensor
   if(sensor_on==0){
     sensor_on=1;
   }else {
