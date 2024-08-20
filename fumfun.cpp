@@ -11,7 +11,7 @@ void Rele(int n, bool estado){
 }
 void STOP(){
   for(char i = 0; i < 4; i++){
-    digitalWrite(reles[i], HIGH);
+    digitalWrite(reles[i], HIGH); //verificar la logica porque esto esta en high y deberia apagar
   }
   Serial.println("STOP");
 }
