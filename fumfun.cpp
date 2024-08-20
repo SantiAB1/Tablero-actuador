@@ -33,3 +33,24 @@ void disparo(bool flag){
     STOP();
   }
 }
+
+//////////Deteccion del sensor de lluvia
+
+//Funcion para habilitar interrupcion por cambio de pin
+void initINT()
+{
+  PCICR|= (1<<PCIE0);
+  PCMSK0|=(1<<PCINT3);
+}
+
+//Función para cambiar la variable que indica si se activo o desactivo el sensor
+void rutinaINT(PCINT0_vect) 
+{
+  delay(500)  //se coloca un delay para asegurar que los rebotes no cambien el estado varias veces, ya que podrian generar que se desconfigure la logica y quede siempre en activo el sensor
+  if(sensor_on==0){
+    sensor_on=1;
+  }else {
+    sensor_on=0;
+    }
+  
+}
