@@ -46,7 +46,7 @@ void setup() {
 }
 
 void loop() {
-  
+
 
   if(!digitalRead(botondisparo)){ // Este es un disparo manual (forzado)
     disparo(1);

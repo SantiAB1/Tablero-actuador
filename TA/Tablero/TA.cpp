@@ -31,6 +31,11 @@ void STOP(){
 }
 
 void disparo(bool flag){
+  // Cuando se dispara el dispositivo se prende una luz amarilla en el led RGB
+  digitalWrite(LEDR,LOW);
+  digitalWrite(LEDG,HIGH);
+  digitalWrite(LEDB,LOW);
+
   if(flag==1){
     Rele(1,HIGH); //Bomba de agua
     Rele(2,HIGH); //electrovalvula
@@ -59,15 +64,16 @@ void interpretarmensaje(char texto)
       radio.stopListening();                             //se pone en modo 
 
       if(disparo_forzado){
+        Serial.println("Mensaje de disparo forzado");
         radio.write(&mensajeF, sizeof(char));
         disparo_forzado = false;
+
       }else if(sensor_on==1 && sensor_activo){
         radio.write(&lluvia, sizeof(char));            //envia el mensaje "L" para confirmar correcta recepción pero avisar que el sensor de lluvia está activo
       }else {
         radio.write(&confirmacion, sizeof(char));  // envia el mensaje "S" para confirmar que se está recibiendo correctamente
       
       }
-    
     //.openReadingPipe(1,direccion); 
       radio.startListening();                           //vuelve al modo receptor
       //delay(10000);
