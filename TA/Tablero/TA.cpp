@@ -4,12 +4,13 @@ int t_carga = 5; // todos en seg
 int t_veneno = 8;
 int t_limpieza =17; //en total son 30 segundos el disparo
 
-char confirmacion='S';
-char lluvia='L';
+char confirmacion='S', lluvia='L', mensajeF = 'F';
 const byte direccion[5]="juan";
+const byte direccion2[5]="pepe";
 bool flag=0;
 bool sensor_on=0;
 char mensaje;
+bool disparo_forzado = false;
 
 
 RF24 radio(CE, CSN);
@@ -53,19 +54,22 @@ void interpretarmensaje(char texto)
   switch (texto)
   {
     case 'S':
-      digitalWrite(LEDR,LOW);                               
-      digitalWrite(LEDG,HIGH);                           //Si se recibe una S se prende el LED EN VERDE y se apaga el rojo por si se habia prendido
-      radio.openWritingPipe(direccion);
-      radio.stopListening();                             //se pone en modo emisor
+      noveneno=false;
 
-      if(sensor_on==1){
-        radio.write(&lluvia, sizeof(lluvia));            //envia el mensaje "L" para confirmar correcta recepción pero avisar que el sensor de lluvia está activo
+      radio.stopListening();                             //se pone en modo 
+
+      if(disparo_forzado){
+        radio.write(&mensajeF, sizeof(char));
+        disparo_forzado = false;
+      }else if(sensor_on==1 && sensor_activo){
+        radio.write(&lluvia, sizeof(char));            //envia el mensaje "L" para confirmar correcta recepción pero avisar que el sensor de lluvia está activo
       }else {
-        radio.write(&confirmacion, sizeof(confirmacion));  // envia el mensaje "S" para confirmar que se está recibiendo correctamente
+        radio.write(&confirmacion, sizeof(char));  // envia el mensaje "S" para confirmar que se está recibiendo correctamente
+      
       }
-
-      radio.openReadingPipe(1,direccion); 
-      radio.startListening();                            //vuelve al modo receptor
+    
+    //.openReadingPipe(1,direccion); 
+      radio.startListening();                           //vuelve al modo receptor
       //delay(10000);
 
 
@@ -82,24 +86,72 @@ void interpretarmensaje(char texto)
     break;
     
     case 'V':
-      digitalWrite(LEDVENENO,HIGH);
+      noveneno=true;
        // Cuando la pagina web nos dice que esta vacio
     break;
 
     default:
-      digitalWrite(LEDG,LOW);
-      digitalWrite (LEDR,HIGH); //Pongo el rgb en rojo para indicar que no se está recibiendo "S" ni ningún otro mensaje válido
+      
     break;
   }
 
 }
 
-void miISR()
-{
-  delay(500); //se coloca un delay para asegurar que los rebotes no cambien el estado varias veces, ya que podrian generar que se desconfigure la logica y quede siempre en activo el sensor
-  if(sensor_on==0){
-    sensor_on=1;
-  }else {
-    sensor_on=0;
-    }
+void leds(){
+  if(noveneno){
+    // no hay veneno luz roja
+    digitalWrite(LEDB,HIGH);
+    digitalWrite(LEDG,HIGH);
+    digitalWrite(LEDR,LOW);
+
+  } else if(!sensor_activo){
+    // sensor desactivado (bypass) luz azul
+    digitalWrite(LEDG,HIGH);
+    digitalWrite(LEDB,LOW);
+    digitalWrite(LEDR,HIGH);
+
+  } else if(sensor_on){
+    // lluvia luz blanca
+    digitalWrite(LEDR,LOW);
+    digitalWrite(LEDG,LOW);
+    digitalWrite(LEDB,LOW);
+
+  } else {
+    // listoooo
+    digitalWrite(LEDG,LOW);
+    digitalWrite(LEDR,HIGH);
+    digitalWrite(LEDB,HIGH);
+
+
+  }
+
 }
+
+
+void SecuenciaRGB(){
+  digitalWrite(LEDR, LOW);
+  digitalWrite(LEDG, HIGH);
+  digitalWrite(LEDB, HIGH);
+
+  delay(300);
+  digitalWrite(LEDR, HIGH);
+  digitalWrite(LEDG, LOW);
+  digitalWrite(LEDB, HIGH);
+
+  delay(300);
+  digitalWrite(LEDR, HIGH);
+  digitalWrite(LEDG, HIGH);
+  digitalWrite(LEDB, LOW);
+
+  delay(300);
+  digitalWrite(LEDR, LOW);
+  digitalWrite(LEDG, LOW);
+  digitalWrite(LEDB, LOW);
+
+  delay(800);
+  digitalWrite(LEDR, HIGH);
+  digitalWrite(LEDG, HIGH);
+  digitalWrite(LEDB, HIGH);
+
+}
+
